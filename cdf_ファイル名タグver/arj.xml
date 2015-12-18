@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="Shift_JIS" ?>
+<converter version="1">
+	<section>
+		<type>Common Archiver</type>
+		<file>UnArj32J.DLL</file>
+		<function>Unarj</function>
+		<extension>arj</extension>
+		<icon>arj.ico</icon>
+		<wildcard>*</wildcard>
+		<decode>
+			<command>x -+ -jf <sourcefile /> <targetdir /> <filelist /></command>
+		</decode>
+	</section>
+</converter>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="Shift_JIS" standalone="yes" ?>
+<converter version="1">
+	<section>
+		<type value="Common Archiver" />
+		<file value="UnLha32.DLL" />
+		<file value="asdf.DLL" />
+		<file value="lkj.DLL" />
+		<function value="Unlha" />
+		<extension value="lzh" />
+		<extension value="lzh2" />
+		<extension value="lzh3" />
+		<icon value="UnLha32.DLL" number="1" />
+		<wildcard value="*" />
+		<decode>
+			<command value="e -+ -c -jyc -jf0 -d1 %s %s %s" />
+		</decode>
+	</section>
+
+	<section>
+		<type value="Common Archiver" />
+		<file value="UnZip32.DLL" />
+		<function value="UnZip" />
+		<extension value="zip" />
+		<icon value="zip.ico" />
+		<wildcard value="" />
+		<decode>
+			<command value="-x %s %s %s" />
+		</decode>
+	</section>
+</converter>

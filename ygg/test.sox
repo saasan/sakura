@@ -1,0 +1,56 @@
+/***************************************************************************-->
+	世界樹 -yggdrasil-
+		サンプルSOXファイル
+****************************************************************************-->
+	
+	Tab幅を４文字に設定して表示させてください。
+	
+	■ test.sox
+		http://tricklib.com/cxx/ex/yggdrasil/test.sox
+	
+	□ 関連ファイル
+		yggモジュールのヘッダファイル
+		http://tricklib.com/cxx/ex/yggdrasil/ygg.h
+		yggモジュールの本体
+		http://tricklib.com/cxx/ex/yggdrasil/ygg.cpp
+		本モジュールのチュートリアルソースファイル
+		http://tricklib.com/cxx/ex/yggdrasil/ygg_test.cpp
+		全ファイルパック
+		http://tricklib.com/cxx/ex/yggdrasil/ygg.lzh
+		http://tricklib.com/cxx/ex/yggdrasil/ygg.zip
+	
+	□ リファレンス・サポートページ
+		http://tricklib.com/cxx/ex/yggdrasil/
+	
+	
+	"-->"を使うことによりSOXの一つの要素(element)と同じ範囲のテキストがコ
+	メントとして扱われます。これによりXMLと同様にまとまったブロックをまと
+	めてコメント化することが出来ます。
+	
+first>
+	attr1=hoge
+	mage
+	hoge-->
+		longth=chobi
+		p>	てすてす
+			b>	c>	d>	e>	f>	test
+		ほえほえ
+	hige>
+		length=chobi
+		p>
+			てすてす
+			b>	c>	d>	e>	f>	test
+		p>
+			ほすほす
+		&lt;強調&gt;ほえほえ&amp;はえはえ&lt;/強調&gt;
+	hige>
+		length=namazu
+		p>
+			もへもへ
+		p>
+			なへなへ
+
+/**************************************************************************-->
+	□■□■                  Wraith the Trickster                  □■□■
+	■□■□ ～I'll go with heaven's advantage and fool's wisdom.～ ■□■□
+***************************************************************************-->

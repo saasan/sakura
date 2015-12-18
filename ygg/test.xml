@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding='shift_jis' standalone='yes' ?>
+<!--***************************************************************************
+	世界樹 -yggdrasil-
+		サンプルXMLファイル
+****************************************************************************-->
+<!--
+	Tab幅を４文字に設定して表示させてください。
+	
+	■ test.xml
+		http://tricklib.com/cxx/ex/yggdrasil/test.xml
+	
+	□ 関連ファイル
+		yggモジュールのヘッダファイル
+		http://tricklib.com/cxx/ex/yggdrasil/ygg.h
+		yggモジュールの本体
+		http://tricklib.com/cxx/ex/yggdrasil/ygg.cpp
+		本モジュールのチュートリアルソースファイル
+		http://tricklib.com/cxx/ex/yggdrasil/ygg_test.cpp
+		全ファイルパック
+		http://tricklib.com/cxx/ex/yggdrasil/ygg.lzh
+		http://tricklib.com/cxx/ex/yggdrasil/ygg.zip
+	
+	□ リファレンス・サポートページ
+		http://tricklib.com/cxx/ex/yggdrasil/
+-->
+<first attr1="hoge" attr2='hoge2'>
+	<single/>
+	<single attr1="hoge" attr2='hoge2'/>
+	<single attr1="hoge" attr2='hoge2' />
+	mage<![CDATA[<hoge><br><hoge/>]]>
+	<!--hoge>
+		longth=chobi
+		<p>	てすてす
+			<b><c><d><e><f>test</f></e></d></c></b>
+		</p>
+		ほえほえ
+	</hoge-->
+	<hige length="chobi" >
+		<p>
+			てすてす
+			<b><c><d><e><f>test</f></e></d></c></b>
+		</p>
+		<p>
+			ほすほす
+		</p>
+		&lt;強調&gt;ほえほえ&amp;はえはえ&lt;/強調&gt;
+	</hige>
+	<hige length="namazu">
+		<p>
+			もへもへ
+		</p>
+		<p>
+			なへなへ
+		</p>
+	</hige>
+</first>
+<!--***************************************************************************
+	□■□■                  Wraith the Trickster                  □■□■
+	■□■□ ～I'll go with heaven's advantage and fool's wisdom.～ ■□■□
+****************************************************************************-->
