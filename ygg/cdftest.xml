@@ -1,30 +1,29 @@
 <?xml version="1.0" encoding="Shift_JIS" standalone="yes" ?>
-<converter version="1">
-	<section>
-		<type value="Common Archiver" />
-		<file value="UnLha32.DLL" />
-		<file value="asdf.DLL" />
-		<file value="lkj.DLL" />
-		<function value="Unlha" />
-		<extension value="lzh" />
-		<extension value="lzh2" />
-		<extension value="lzh3" />
-		<icon value="UnLha32.DLL" number="1" />
-		<wildcard value="*" />
+<adf version="1.0">
+	<archiver title="UnZip32">
+		<file>UnZip32.DLL</file>
+		<file>gfxgui32.dat</file>
+		<file>aa.DLL</file>
+		<function>UnZip</function>
+		<extension>zip</extension>
+		<wildcard></wildcard>
 		<decode>
-			<command value="e -+ -c -jyc -jf0 -d1 %s %s %s" />
+			<command>x1 %s %s %s</command>
+			<command>x2 %s %s %s</command>
+			<command>x3 %s %s %s</command>
 		</decode>
-	</section>
+	</archiver>
 
-	<section>
-		<type value="Common Archiver" />
-		<file value="UnZip32.DLL" />
-		<function value="UnZip" />
-		<extension value="zip" />
-		<icon value="zip.ico" />
-		<wildcard value="" />
+	<archiver title="Unlha32">
+		<file>Unlha32.DLL</file>
+		<function>Unlha</function>
+		<extension>lzh</extension>
+		<extension>lza</extension>
+		<wildcard></wildcard>
 		<decode>
-			<command value="-x %s %s %s" />
+			<command>x2 %s %s %s</command>
+			<command>xsdd %s %s %s</command>
+			<command>xaaa %s %s %s</command>
 		</decode>
-	</section>
-</converter>
+	</archiver>
+</adf>

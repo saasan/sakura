@@ -86,12 +86,10 @@ VOID CComboFolder::OnSelEndOk()
 		CString title;
 		title.LoadString(IDS_BROWSE_TITLE);
 
-		CTransFolderDialog cFolderDlg(
+		CFolderDialog cFolderDlg(
 			m_hWnd,
 			title,
-			BIF_RETURNONLYFSDIRS | BIF_STATUSTEXT,
-			(CMainOption::mainStyles & OPTION_WINDOW_TRANS),
-			CMainOption::transValue
+			BIF_RETURNONLYFSDIRS | BIF_STATUSTEXT
 		);
 
 		// フォルダ選択ダイアログ表示
@@ -450,51 +448,4 @@ LRESULT CComboChild::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
 		}
 	}
 	return 0;
-}
-
-/////////////////////////////////////////////////////////////////////////////
-// CTransFolderDialog
-
-// 初期化
-void CTransFolderDialog::OnInitialized()
-{
-	TCHAR folder[MAX_PATH];
-
-	// ウインドウの半透明化
-	SetTransparent();
-	// カレントフォルダを選択
-	if (GetCurrentDirectory(sizeof(folder)/sizeof(TCHAR), folder))
-	{
-		SetSelection(folder);
-	}
-}
-
-// 選択中のフォルダを表示
-void CTransFolderDialog::OnSelChanged(LPITEMIDLIST pItemIDList)
-{
-	TCHAR folder[MAX_PATH];
-
-	if (SHGetPathFromIDList(pItemIDList, folder))
-	{
-		SetStatusText(folder);
-	}
-}
-
-// ウインドウの半透明化
-VOID CTransFolderDialog::SetTransparent()
-{
-	LONG exstyle = GetWindowLong(m_hWnd, GWL_EXSTYLE);
-	if (trans)
-	{
-		exstyle |= WS_EX_LAYERED;
-		SetWindowLong(m_hWnd, GWL_EXSTYLE, exstyle);
-
-		BYTE bAlpha = (BYTE)(255 * transValue / 100);
-		SetLayeredWindowAttributes(m_hWnd, NULL, bAlpha, LWA_ALPHA);
-	}
-	else
-	{
-		exstyle &= ~(WS_EX_LAYERED);
-		SetWindowLong(m_hWnd, GWL_EXSTYLE, exstyle);
-	}
 }

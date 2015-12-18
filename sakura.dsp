@@ -155,10 +155,6 @@ SOURCE=.\combofolder.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\converter.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\listfile.cpp
 # End Source File
 # Begin Source File
@@ -320,10 +316,6 @@ SOURCE=.\combofolder.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\converter.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\listfile.h
 # End Source File
 # Begin Source File
@@ -333,10 +325,6 @@ SOURCE=.\maindlg.h
 # Begin Source File
 
 SOURCE=.\resource.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\s2tlframe.h
 # End Source File
 # Begin Source File
 

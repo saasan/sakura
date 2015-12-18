@@ -1,0 +1,27 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sakura", "sakura.vcproj", "{814B8537-32D0-4F3F-A740-1D7A49DDD486}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Debug Unicode = Debug Unicode
+		Release = Release
+		Release Unicode = Release Unicode
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{814B8537-32D0-4F3F-A740-1D7A49DDD486}.Debug.ActiveCfg = Debug|Win32
+		{814B8537-32D0-4F3F-A740-1D7A49DDD486}.Debug.Build.0 = Debug|Win32
+		{814B8537-32D0-4F3F-A740-1D7A49DDD486}.Debug Unicode.ActiveCfg = Debug Unicode|Win32
+		{814B8537-32D0-4F3F-A740-1D7A49DDD486}.Debug Unicode.Build.0 = Debug Unicode|Win32
+		{814B8537-32D0-4F3F-A740-1D7A49DDD486}.Release.ActiveCfg = Release|Win32
+		{814B8537-32D0-4F3F-A740-1D7A49DDD486}.Release.Build.0 = Release|Win32
+		{814B8537-32D0-4F3F-A740-1D7A49DDD486}.Release Unicode.ActiveCfg = Release Unicode|Win32
+		{814B8537-32D0-4F3F-A740-1D7A49DDD486}.Release Unicode.Build.0 = Release Unicode|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

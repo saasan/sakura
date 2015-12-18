@@ -6,7 +6,6 @@
 #include "resource.h"
 #include "maindlg.h"
 #include "sakuraOptions.h"
-#include "converter.h"
 
 // レジストリ関係
 const TCHAR regWindowLeft[]			= _T("windowLeft");
@@ -106,13 +105,11 @@ LRESULT CMainDlg::OnAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BO
 {
 	TCHAR fileName[MAX_PATH * 10];
 
-	CTransFileDialog cFileDlg(
+	CFileDialog cFileDlg(
 		TRUE, NULL, NULL,
 		 OFN_ALLOWMULTISELECT | OFN_DONTADDTORECENT | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY,
 		 _T("すべてのファイル (*.*)\0*.*\0\0"),
-		 m_hWnd,
-		(CMainOption::mainStyles & OPTION_WINDOW_TRANS),
-		CMainOption::transValue
+		 m_hWnd
 	);
 
 	ZeroMemory(fileName, sizeof(fileName) / sizeof(TCHAR));
@@ -157,10 +154,9 @@ LRESULT CMainDlg::OnAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BO
 
 LRESULT CMainDlg::OnOption(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CPropertySheetNoHelp sheet(IDS_OPTION_TITLE, 0, m_hWnd, (CMainOption::mainStyles & OPTION_WINDOW_TRANS), CMainOption::transValue);
+	CPropertySheetNoHelp sheet(IDS_OPTION_TITLE, 0, m_hWnd);
 	CPropertyPageMain pageMain;
 	CPropertyPagePath pagePath;
-	CPropertyPageWindows pageWindow;
 	CPropertyPageShell pageShell;
 	CPropertyPageAbout pageAbout;
 
@@ -173,7 +169,6 @@ LRESULT CMainDlg::OnOption(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 	// ページ追加
 	sheet.AddPage(pageMain);
 	sheet.AddPage(pagePath);
-	sheet.AddPage(pageWindow);
 	sheet.AddPage(pageShell);
 	sheet.AddPage(pageAbout);
 
@@ -181,16 +176,6 @@ LRESULT CMainDlg::OnOption(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 	if (sheet.DoModal() == IDOK)
 	{
 		combofolder.MaxCount(pageMain.optionFolderCount);
-
-		// 常に手前に表示
-		SetTopmost(CMainOption::mainStyles & OPTION_WINDOW_TOP);
-
-		// スナップ
-		SetSnapEnable(CMainOption::mainStyles & OPTION_WINDOW_SNAP);
-		SetSnapWidth(CMainOption::snapWidth);
-
-		// 半透明化
-		SetTransparent((CMainOption::mainStyles & OPTION_WINDOW_TRANS), CMainOption::transValue);
 	}
 	return 0;
 }
@@ -247,60 +232,9 @@ VOID CMainDlg::CloseDialog(int nVal)
 	SaveProfile();
 	combofolder.SaveProfile();
 
-	//AnimateWindow(m_hWnd, 200, AW_HIDE | AW_BLEND);
 	DestroyWindow();
 	::PostQuitMessage(nVal);
 }
-
-#if 0
-void CMainDlg::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
-{
-	CDC dc(lpDrawItemStruct->hDC);
-
-	if (lpDrawItemStruct->CtlID == ID_FILE)
-	{
-		if (lpDrawItemStruct->itemID == -1)
-		{
-		}
-		else
-		{
-			TCHAR text[MAX_PATH];
-
-			ZeroMemory(text, sizeof(text));
-			listfile.GetText(lpDrawItemStruct->itemID, text);
-
-			if (lpDrawItemStruct->itemState & ODS_SELECTED)
-			{
-				dc.FillSolidRect(&lpDrawItemStruct->rcItem, GetSysColor(COLOR_HIGHLIGHT));
-				dc.SetTextColor(GetSysColor(COLOR_HIGHLIGHTTEXT));
-				dc.DrawText(text, -1, &lpDrawItemStruct->rcItem, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
-			}
-			else
-			{
-				dc.FillSolidRect(&lpDrawItemStruct->rcItem, GetSysColor(COLOR_WINDOW));
-				dc.SetTextColor(GetSysColor(COLOR_WINDOWTEXT));
-				dc.DrawText(text, -1, &lpDrawItemStruct->rcItem, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
-			}
-
-			if (lpDrawItemStruct->itemState & ODS_FOCUS)
-			{
-				dc.DrawFocusRect(&lpDrawItemStruct->rcItem);
-			}
-		}
-	}
-}
-
-void CMainDlg::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
-{
-	// return default height for a system font
-	HWND hWnd = GetDlgItem(lpMeasureItemStruct->CtlID);
-	CClientDC dc(hWnd);
-	TEXTMETRIC tm;
-	dc.GetTextMetrics(&tm);
-
-	lpMeasureItemStruct->itemHeight = tm.tmHeight;
-}
-#endif
 
 VOID CMainDlg::LoadProfile()
 {
@@ -345,13 +279,6 @@ VOID CMainDlg::LoadProfile()
 	{
 		CenterWindow();
 	}
-
-	// スナップ
-	SetSnapWidth(CMainOption::snapWidth);
-	SetSnapEnable((CMainOption::mainStyles & OPTION_WINDOW_SNAP));
-
-	// 半透明化
-	SetTransparent((CMainOption::mainStyles & OPTION_WINDOW_TRANS), CMainOption::transValue);
 }
 
 VOID CMainDlg::SaveProfile()
@@ -383,214 +310,7 @@ VOID CMainDlg::SaveProfile()
 	}
 }
 
-// ウインドウの半透明化
-VOID CMainDlg::SetTransparent(BOOL trans, DWORD value)
-{
-	LONG exstyle = GetWindowLong(GWL_EXSTYLE);
-	if (trans)
-	{
-		exstyle |= WS_EX_LAYERED;
-		SetWindowLong(GWL_EXSTYLE, exstyle);
-
-		BYTE bAlpha = (BYTE)(0xFF * value / 100);
-		SetLayeredWindowAttributes(m_hWnd, NULL, bAlpha, LWA_ALPHA);
-	}
-	else
-	{
-		exstyle &= ~(WS_EX_LAYERED);
-		SetWindowLong(GWL_EXSTYLE, exstyle);
-	}
-}
-
-BOOL CMainDlg::GetTopmost()
-{
-	LONG exstyle = GetWindowLong(GWL_EXSTYLE);
-	if (exstyle & WS_EX_TOPMOST)
-	{
-		return TRUE;
-	}
-	return FALSE;
-}
-
-VOID CMainDlg::SetTopmost(BOOL top)
-{
-	if (top)
-	{
-		SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-	}
-	else
-	{
-		SetWindowPos(HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-	}
-}
-
 VOID CMainDlg::Excute()
 {
-	BOOL ret = FALSE;
-	CPathString dir, convdir, file;
-	TCHAR *filename, *extension;
-	int i, sel, count;
-	CString name;
-	CString title;
-
-	sel = combofolder.GetCurSel();
-	count = listfile.GetCount();
-
-	// タイトルの文字数を得る
-	int len = GetWindowTextLength();
-	if (len)
-	{
-		// null文字分+1
-		len++;
-		TCHAR *temp = new TCHAR[len];
-		if (temp)
-		{
-			if (GetWindowText(temp, len))
-			{
-				title = temp;
-			}
-			delete [] temp;
-		}
-	}
-
-	if (count > 0 && sel > combofolder.RecentFolderItemSame)
-	{
-		combofolder.GetLBText(sel, dir);
-		if (dir.IsDirectory())
-		{
-			// コンバータをロード
-			CConverterManager manager(m_hWnd);
-			manager.Load();
-
-			if (manager.GetCount() > 0)
-			{
-				for (i = 0; i < count; i++)
-				{
-					listfile.GetText(i, file);
-					listfile.SetSel(-1, FALSE);
-					listfile.SetSel(i, TRUE);
-
-					if (!title.IsEmpty())
-					{
-						CString temp1(title);
-						CString temp2;
-						temp2.Format(_T(" (%d/%d)"), i + 1, count);
-						temp1 += temp2;
-						SetWindowText(temp1);
-					}
-
-					if (file.FileExists())
-					{
-						// コンバータを得る
-						CConverter *conv = manager.GetSupportedConverter(file);
-
-						if (conv)
-						{
-							convdir = dir;
-							filename = PathFindFileName(file);
-							extension = PathFindExtension(file);
-
-							name = _T("");
-							while (filename < extension)
-							{
-								name += *filename;
-								filename++;
-							}
-							convdir.AddBackslash();
-							convdir += name;
-							convdir.AddBackslash();
-
-							file.QuoteSpaces();
-							convdir.QuoteSpaces();
-
-							if (conv->Decode(file, convdir))
-							{
-								if (CMainOption::mainStyles & OPTION_MAIN_RECENT)
-								{
-									SHAddToRecentDocs(SHARD_PATH, (LPCVOID)(LPCTSTR)convdir);
-								}
-							}
-
-							ret = TRUE;
-						}
-					}
-				}
-				if (!title.IsEmpty())
-				{
-					SetWindowText(title);
-				}
-			}
-			else
-			{
-				MessageBox(_T("CDFファイルがない、または読み込めませんでした。"));
-			}
-		}
-	}
-
-	if (ret)
-	{
-		CloseDialog(IDOK);
-	}
-	else
-	{
-		MessageBox(_T("Error!"));
-	}
-}
-
-/////////////////////////////////////////////////////////////////////////////
-void CTransFileDialog::OnInitDone(LPOFNOTIFY /*lpon*/)
-{
-	// ウインドウの半透明化
-	SetTransparent();
-}
-
-void CTransFileDialog::OnFolderChange(LPOFNOTIFY /*lpon*/)
-{
-	// 半透明状態だとなぜかリストビューが更新されないためF5で更新
-	LONG exstyle = GetFileDialogWindow().GetWindowLong(GWL_EXSTYLE);
-	if (exstyle & WS_EX_LAYERED)
-	{
-		PostMessage(WM_KEYDOWN, VK_F5, 0);
-	}
-}
-
-#if 0
-BOOL CTransFileDialog::OnFileOK(LPOFNOTIFY /*lpon*/)
-{
-	HWND hLstWnd = ::GetDlgItem(::GetDlgItem(GetFileDialogWindow(), lst2), 1);
-	if (hLstWnd)
-	{
-	}
-
-	LPTSTR path;
-	int len = GetSpec(NULL, 0);
-	if (len > 0)
-	{
-		path = new TCHAR[len];
-		GetSpec(path, len);
-		delete [] path;
-	}
-	return TRUE;
-}
-#endif
-
-// ウインドウの半透明化
-VOID CTransFileDialog::SetTransparent()
-{
-	HWND hWnd = GetFileDialogWindow();
-
-	LONG exstyle = ::GetWindowLong(hWnd, GWL_EXSTYLE);
-	if (trans)
-	{
-		exstyle |= WS_EX_LAYERED;
-		::SetWindowLong(hWnd, GWL_EXSTYLE, exstyle);
-
-		BYTE bAlpha = (BYTE)(255 * transValue / 100);
-		SetLayeredWindowAttributes(hWnd, NULL, bAlpha, LWA_ALPHA);
-	}
-	else
-	{
-		exstyle &= ~(WS_EX_LAYERED);
-		::SetWindowLong(hWnd, GWL_EXSTYLE, exstyle);
-	}
+	MessageBox(_T("まだできてませんー"));
 }

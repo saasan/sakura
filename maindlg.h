@@ -6,13 +6,11 @@
 #define AFX_MAINDLG_H__5C1FC581_E605_48AD_8584_83160927331B__INCLUDED_
 
 #include "resource.h"
-#include "s2tlframe.h"
 #include "combofolder.h"
 #include "listfile.h"
 
 class CMainDlg : public CDialogImpl<CMainDlg>, public CUpdateUI<CMainDlg>,
-public CDialogResize<CMainDlg>, public CMessageFilter, public CIdleHandler,
-public CSnapWindow<CMainDlg>, public COwnerDraw<CMainDlg>
+public CDialogResize<CMainDlg>, public CMessageFilter, public CIdleHandler
 {
 public:
 	HACCEL m_hAccel;
@@ -35,8 +33,6 @@ public:
 		COMMAND_ID_HANDLER(ID_OPTION, OnOption)
 		MESSAGE_HANDLER(WM_NOTIFY, OnNotify)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-		CHAIN_MSG_MAP(COwnerDraw<CMainDlg>)
-		CHAIN_MSG_MAP(CSnapWindow<CMainDlg>)
 		CHAIN_MSG_MAP(CDialogResize<CMainDlg>)
 	END_MSG_MAP()
 
@@ -66,54 +62,14 @@ public:
 
 	VOID CloseDialog(int nVal);
 
-#if 0
-	void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
-	void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
-#endif
-
 	VOID LoadProfile();
 	VOID SaveProfile();
-	VOID SetTransparent(BOOL trans, DWORD value);
-	BOOL GetTopmost();
-	VOID SetTopmost(BOOL top);
 
 	VOID Excute();
 
 	CComboFolder combofolder;
 	CListFile listfile;
 	CToolTipCtrl toolTip;
-};
-
-/////////////////////////////////////////////////////////////////////////////
-// CTransFileDialog - used for browsing for a file
-class CTransFileDialog : public CFileDialogImpl<CTransFileDialog>
-{
-public:
-	CTransFileDialog(BOOL bOpenFileDialog, // TRUE for FileOpen, FALSE for FileSaveAs
-			LPCTSTR lpszDefExt = NULL,
-			LPCTSTR lpszFileName = NULL,
-			DWORD dwFlags = OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-			LPCTSTR lpszFilter = NULL,
-			HWND hWndParent = NULL,
-			BOOL bTrans = FALSE,
-			INT iTransValue = TRANS_VALUE_MAX)
-		: CFileDialogImpl<CTransFileDialog>(bOpenFileDialog, lpszDefExt, lpszFileName, dwFlags, lpszFilter, hWndParent)
-	{
-		trans = bTrans;
-		transValue = iTransValue;
-	}
-
-	void OnInitDone(LPOFNOTIFY /*lpon*/);
-	void OnFolderChange(LPOFNOTIFY /*lpon*/);
-#if 0
-	BOOL OnFileOK(LPOFNOTIFY /*lpon*/);
-#endif
-
-private:
-	BOOL trans;
-	INT transValue;
-
-	VOID SetTransparent();
 };
 
 /////////////////////////////////////////////////////////////////////////////

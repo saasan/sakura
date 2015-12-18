@@ -1,14 +1,14 @@
-#ifndef __S2TLMISC_H__
-#define __S2TLMISC_H__
+#ifndef __S2LIBMISC_H__
+#define __S2LIBMISC_H__
 
 #pragma once
 
 #ifndef __ATLMISC_H__
-	#error s2tlmisc.h requires atlmisc.h to be included first
+	#error s2libmisc.h requires atlmisc.h to be included first
 #endif
 
 #ifndef _INC_SHLWAPI
-	#error s2tlmisc.h requires shlwapi.h to be included first
+	#error s2libmisc.h requires shlwapi.h to be included first
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
@@ -156,4 +156,4 @@ public:
 
 }; //namespace WTL
 
-#endif // __S2TLMISC_H__
+#endif // __S2LIBMISC_H__

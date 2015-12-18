@@ -18,17 +18,6 @@ bool PrivateInit(const CString &cmdLine)
 {
 	::CMainOption::LoadProfile();
 
-	// CoolControlLibrary
-	CMainOption::hCCLDll = LoadLibrary(_T("CCL.DLL"));
-	if (CMainOption::hCCLDll)
-	{
-		PCCL fpInstall = (PCCL)GetProcAddress(CMainOption::hCCLDll, "InstallHook");
-		if (fpInstall)
-		{
-			(*fpInstall)();
-		}
-	}
-
 	return true;
 }
 
@@ -36,6 +25,7 @@ void PrivateTerm()
 {
 	CMainOption::SaveProfile();
 
+	// ê›íËÇÉtÉ@ÉCÉãÇ…ï€ë∂Ç∑ÇÈ
 	if (CMainOption::mainStyles & OPTION_MAIN_OPTION)
 	{
 		CString key, privateKey;
@@ -54,17 +44,6 @@ void PrivateTerm()
 		param += dir + CString(_T(".reg\" HKEY_CURRENT_USER\\")) + key;
 
 		ShellExecute(NULL, _T("open"), _T("regedit.exe"), param, NULL, SW_HIDE);
-	}
-
-	// CoolControlLibrary Hookâèú
-	if (CMainOption::hCCLDll)
-	{
-		PCCL fpUninstall = (PCCL)GetProcAddress(CMainOption::hCCLDll, "UninstallHook");
-		if (fpUninstall)
-		{
-			(*fpUninstall)();
-		}
-		FreeLibrary(CMainOption::hCCLDll);
 	}
 }
 
@@ -95,8 +74,6 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 #if 0
 	dlgMain.ShowWindow(nCmdShow);
 #else
-	//AnimateWindow(dlgMain.m_hWnd, 200, AW_ACTIVATE | AW_BLEND);
-	//RedrawWindow(dlgMain.m_hWnd, NULL, NULL, RDW_ERASE | RDW_INVALIDATE | RDW_FRAME | RDW_ALLCHILDREN);
 	dlgMain.ShowWindow(SW_SHOW);
 #endif
 

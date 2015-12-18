@@ -30,14 +30,13 @@ extern CAppModule _Module;
 #include <atlgdi.h>
 #include <atlctrlx.h>
 
-#include "s2tlmisc.h"
+#include "s2libmisc.h"
 
 #pragma comment(lib, "shlwapi.lib")
 #include <shlwapi.h>
 #pragma comment(lib, "comctl32.lib")
 #include <commctrl.h>
 #pragma comment(lib, "version.lib")
-#include <version.h>
 #pragma comment(lib, "user32.lib")
 #include <winuser.h>
 

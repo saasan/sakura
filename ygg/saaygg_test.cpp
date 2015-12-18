@@ -79,9 +79,9 @@ void test_xml()
 		printf("Error : code:%d : %s\n", e.GetCode(), msg.c_str());
 		return;
 	}
-#endif
-
+#else
 	root.read();
+#endif
 
 	if (root.parse_error.is_error())
 	{

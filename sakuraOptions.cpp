@@ -3,107 +3,8 @@
 
 #include "sakura.h"
 #include "sakuraOptions.h"
-#include "converter.h"
 
-HINSTANCE CMainOption::hCCLDll	= NULL;
-DWORD CMainOption::mainStyles	= 0;
-DWORD CMainOption::snapWidth	= SNAP_WIDTH_DEFAULT;
-DWORD CMainOption::transValue	= TRANS_VALUE_DEFAULT;
-
-/////////////////////////////////////////////////////////////////////////////
-// CHoverHyperLink
-
-BOOL CHoverHyperLink::SubclassWindow(HWND hWnd)
-{
-	BOOL bRet = CHyperLinkImpl<CHoverHyperLink>::SubclassWindow(hWnd);
-	if(bRet)
-		Init();
-	return bRet;
-}
-
-LRESULT CHoverHyperLink::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-	LRESULT ret = CHyperLinkImpl<CHoverHyperLink>::OnCreate(uMsg, wParam, lParam, bHandled);
-	Init();
-	return ret;
-}
-
-LRESULT CHoverHyperLink::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-	if(m_lpstrHyperLink != NULL && ::PtInRect(&m_rcLink, pt))
-	{
-		// マウスが入った
-		if (m_bHover == false)
-		{
-			// 状態が変わったときだけ再描画
-			m_bHover = true;
-			RedrawWindow();
-		}
-		SetCapture();
-	}
-	else
-	{
-		// マウスが出た
-		if (m_bHover == true)
-		{
-			// 状態が変わったときだけ再描画
-			m_bHover = false;
-			RedrawWindow();
-		}
-		ReleaseCapture();
-	}
-	return CHyperLinkImpl<CHoverHyperLink>::OnMouseMove(uMsg, wParam, lParam, bHandled);
-}
-
-void CHoverHyperLink::Init()
-{
-	if(m_bPaintLabel)
-	{
-		CWindow wnd = GetParent();
-		CFontHandle font = wnd.GetFont();
-		if(font.m_hFont != NULL)
-		{
-			LOGFONT lf;
-			font.GetLogFont(&lf);
-
-			if(m_hFont != NULL)
-				::DeleteObject(m_hFont);
-
-			lf.lfUnderline = FALSE;
-			m_hFont = ::CreateFontIndirect(&lf);
-
-			lf.lfUnderline = TRUE;
-			m_hHoverFont = ::CreateFontIndirect(&lf);
-		}
-	}
-}
-
-void CHoverHyperLink::DoPaint(CDCHandle dc)
-{
-	dc.SetBkMode(TRANSPARENT);
-	dc.SetTextColor(m_bVisited ? m_clrVisited : m_clrLink);
-	if(m_hFont != NULL && m_hHoverFont != NULL)
-	{
-		dc.SelectFont((m_bHover ? m_hHoverFont : m_hFont));
-	}
-	LPTSTR lpstrText = (m_lpstrLabel != NULL) ? m_lpstrLabel : m_lpstrHyperLink;
-	DWORD dwStyle = GetStyle();
-	int nDrawStyle = DT_LEFT;
-	if (dwStyle & SS_CENTER)
-	{
-		nDrawStyle = DT_CENTER;
-	}
-	else if (dwStyle & SS_RIGHT)
-	{
-		nDrawStyle = DT_RIGHT;
-	}
-	dc.DrawText(lpstrText, -1, &m_rcLink, nDrawStyle | DT_WORDBREAK);
-	if(GetFocus() == m_hWnd)
-	{
-		dc.DrawFocusRect(&m_rcLink);
-	}
-}
+DWORD CMainOption::mainStyles = 0;
 
 /////////////////////////////////////////////////////////////////////////////
 // CPropertySheetNoHelp
@@ -113,8 +14,6 @@ LRESULT CPropertySheetNoHelp::OnShowWindow(UINT /*uMsg*/, WPARAM wParam, LPARAM 
 	BOOL fShow = (BOOL) wParam;
 	if (fShow)
 	{
-		// ウインドウの半透明化
-		SetTransparent();
 		// 右上の[?]ボタンを消す
 		LONG style = ::GetWindowLong(m_hWnd, GWL_EXSTYLE);
 		style &= ~(WS_EX_CONTEXTHELP);
@@ -122,25 +21,6 @@ LRESULT CPropertySheetNoHelp::OnShowWindow(UINT /*uMsg*/, WPARAM wParam, LPARAM 
 	}
 	bHandled = FALSE;
 	return 1;
-}
-
-// ウインドウの半透明化
-VOID CPropertySheetNoHelp::SetTransparent()
-{
-	LONG exstyle = GetWindowLong(GWL_EXSTYLE);
-	if (trans)
-	{
-		exstyle |= WS_EX_LAYERED;
-		SetWindowLong(GWL_EXSTYLE, exstyle);
-
-		BYTE bAlpha = (BYTE)(255 * transValue / 100);
-		SetLayeredWindowAttributes(m_hWnd, NULL, bAlpha, LWA_ALPHA);
-	}
-	else
-	{
-		exstyle &= ~(WS_EX_LAYERED);
-		SetWindowLong(GWL_EXSTYLE, exstyle);
-	}
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -212,9 +92,6 @@ VOID CPropertyPageMain::LoadData()
 {
 	optionOpen		= ((CMainOption::mainStyles & OPTION_MAIN_OPEN     ) ? TRUE : FALSE);
 	optionExplorer	= ((CMainOption::mainStyles & OPTION_MAIN_EXPLORER ) ? TRUE : FALSE);
-	optionArc		= ((CMainOption::mainStyles & OPTION_MAIN_ARC      ) ? TRUE : FALSE);
-	optionSpi		= ((CMainOption::mainStyles & OPTION_MAIN_SPI      ) ? TRUE : FALSE);
-	optionExe		= ((CMainOption::mainStyles & OPTION_MAIN_EXE      ) ? TRUE : FALSE);
 	optionRecent	= ((CMainOption::mainStyles & OPTION_MAIN_RECENT   ) ? TRUE : FALSE);
 	optionOption	= ((CMainOption::mainStyles & OPTION_MAIN_OPTION   ) ? TRUE : FALSE);
 	optionSubfolder	= ((CMainOption::mainStyles & OPTION_MAIN_SUBFOLDER) ? TRUE : FALSE);
@@ -232,18 +109,6 @@ VOID CPropertyPageMain::SaveData()
 	{
 		CMainOption::mainStyles |= OPTION_MAIN_EXPLORER;
 	}
-	if (optionArc)
-	{
-		CMainOption::mainStyles |= OPTION_MAIN_ARC;
-	}
-	if (optionSpi)
-	{
-		CMainOption::mainStyles |= OPTION_MAIN_SPI;
-	}
-	if (optionExe)
-	{
-		CMainOption::mainStyles |= OPTION_MAIN_EXE;
-	}
 	if (optionRecent)
 	{
 		CMainOption::mainStyles |= OPTION_MAIN_RECENT;
@@ -256,117 +121,6 @@ VOID CPropertyPageMain::SaveData()
 	{
 		CMainOption::mainStyles |= OPTION_MAIN_SUBFOLDER;
 	}
-}
-
-/////////////////////////////////////////////////////////////////////////////
-// CPropertyPageWindows
-
-LRESULT CPropertyPageWindows::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
-	// スナップ桁制限(2)
-	SendMessage(GetDlgItem(IDC_WINDOW_SNAP_WIDTH_EDIT),
-		EM_SETLIMITTEXT, (WPARAM) 2, (LPARAM) 0);
-	// スナップ範囲制限
-	SendMessage(GetDlgItem(IDC_WINDOW_SNAP_WIDTH_UPDOWN),
-		UDM_SETRANGE, (WPARAM) 0, (LPARAM) MAKELONG(SNAP_WIDTH_MAX, SNAP_WIDTH_MIN));
-
-	// 透明度桁制限(3)
-	SendMessage(GetDlgItem(IDC_WINDOW_TRANS_VALUE_EDIT),
-		EM_SETLIMITTEXT, (WPARAM) 3, (LPARAM) 0);
-	// 透明度範囲制限
-	SendMessage(GetDlgItem(IDC_WINDOW_TRANS_VALUE_UPDOWN),
-		UDM_SETRANGE, (WPARAM) 0, (LPARAM) MAKELONG(TRANS_VALUE_MAX, TRANS_VALUE_MIN));
-	return TRUE;
-}
-
-BOOL CPropertyPageWindows::OnSetActive()
-{
-	return DoDataExchange(DDX_LOAD);
-}
-
-BOOL CPropertyPageWindows::OnKillActive()
-{
-	if (DoDataExchange(DDX_SAVE))
-	{
-		SaveData();
-		return TRUE;
-	}
-	else
-	{
-		return FALSE;
-	}
-}
-
-void CPropertyPageWindows::OnDataExchangeError(UINT nCtrlID, BOOL /*bSave*/)
-{
-	::SetFocus(GetDlgItem(nCtrlID));
-
-	CString message;
-	message.LoadString(IDS_OPTION_WARNING_DEFAULT);
-	MessageBox(message, NULL, MB_ICONWARNING);
-}
-
-void CPropertyPageWindows::OnDataValidateError(UINT nCtrlID, BOOL /*bSave*/, _XData& /*data*/)
-{
-	::SetFocus(GetDlgItem(nCtrlID));
-
-	switch (nCtrlID)
-	{
-		case IDC_WINDOW_SNAP_WIDTH_EDIT:
-		{
-			CString message, format;
-			format.LoadString(IDS_OPTION_WARNING_MAXCOUNT);
-			message.Format(format, SNAP_WIDTH_MIN, SNAP_WIDTH_MAX);
-			MessageBox(message, NULL, MB_ICONWARNING);
-			break;
-		}
-		case IDC_WINDOW_TRANS_VALUE_EDIT:
-		{
-			CString message, format;
-			format.LoadString(IDS_OPTION_WARNING_MAXCOUNT);
-			message.Format(format, TRANS_VALUE_MIN, TRANS_VALUE_MAX);
-			MessageBox(message, NULL, MB_ICONWARNING);
-			break;
-		}
-		default:
-		{
-			CString message;
-			message.LoadString(IDS_OPTION_WARNING_DEFAULT);
-			MessageBox(message, NULL, MB_ICONWARNING);
-			break;
-		}
-	}
-}
-
-void CPropertyPageWindows::LoadData()
-{
-	optionTop	= ((CMainOption::mainStyles & OPTION_WINDOW_TOP) ? TRUE : FALSE);
-	optionSnap	= ((CMainOption::mainStyles & OPTION_WINDOW_SNAP) ? TRUE : FALSE);
-	optionTrans	= ((CMainOption::mainStyles & OPTION_WINDOW_TRANS) ? TRUE : FALSE);
-
-	optionSnapWidth = CMainOption::snapWidth;
-	optionTransValue = CMainOption::transValue;
-}
-
-void CPropertyPageWindows::SaveData()
-{
-	CMainOption::mainStyles &= (~OPTION_WINDOW_MASK);
-
-	if (optionTop)
-	{
-		CMainOption::mainStyles |= OPTION_WINDOW_TOP;
-	}
-	if (optionSnap)
-	{
-		CMainOption::mainStyles |= OPTION_WINDOW_SNAP;
-	}
-	if (optionTrans)
-	{
-		CMainOption::mainStyles |= OPTION_WINDOW_TRANS;
-	}
-
-	CMainOption::snapWidth = optionSnapWidth;
-	CMainOption::transValue = optionTransValue;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -403,64 +157,6 @@ LRESULT CPropertyPageShell::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARA
 		LVITEM item;
 		ZeroMemory(&item, sizeof(item));
 		item.mask = LVIF_TEXT | LVIF_IMAGE;
-
-
-		// コンバータリスト
-		list<CConverter *> convList;
-
-		// コンバータをロード
-		CConverterManager manager(m_hWnd);
-		manager.Load();
-
-		// コンバータを得る
-		manager.GetConverters(convList);
-
-		list<CConverter *>::iterator it, end;
-		it = convList.begin();
-		end = convList.end();
-
-		// すべてのコンバータの、すべての対応拡張子を登録
-		for (; it != end; it++)
-		{
-			// ファイルが存在しなかったらスキップ
-			if (!CPathString::SystemFileExists((*it)->file))
-			{
-				continue;
-			}
-
-			list<CString> extList;
-
-			// 対応拡張子リストを得る
-			(*it)->GetSupportedExtensions(extList);
-
-			list<CString>::iterator eit, eend;
-			eit = extList.begin();
-			eend = extList.end();
-			for (; eit != eend; eit++)
-			{
-				if (!(*eit).IsEmpty())
-				{
-					int index = -1;
-					int len = (*eit).GetLength();
-					len++;
-					TCHAR *text = new TCHAR[len];
-					_tcsncpy(text, (LPCTSTR)(*eit), len);
-
-					// リストに登録
-					item.pszText = text;
-					item.iImage = GetImageIndexFromExtension(item.pszText);
-					index = clv.InsertItem(&item);
-					// リスト登録成功時
-					if (index >= 0)
-					{
-						// 関連付けのチェック
-						clv.SetCheckState(index, GetAssociation(text));
-					}
-
-					DELETE_ARRAY_PTR(text);
-				}
-			}
-		}
 	}
 
 
@@ -593,7 +289,7 @@ BOOL CPropertyPageShell::GetAssociation(LPCTSTR lpExtension)
 					shellKey = temp;
 					shellKey += _T("\\shell");
 				}
-				DELETE_ARRAY_PTR(temp);
+				delete [] temp;
 				len = 0;
 			}
 		}
@@ -618,7 +314,7 @@ BOOL CPropertyPageShell::GetAssociation(LPCTSTR lpExtension)
 						commandKey += temp;
 						commandKey += _T("\\command");
 					}
-					DELETE_ARRAY_PTR(temp);
+					delete [] temp;
 					len = 0;
 				}
 			}
@@ -646,7 +342,7 @@ BOOL CPropertyPageShell::GetAssociation(LPCTSTR lpExtension)
 					{
 						command = temp;
 					}
-					DELETE_ARRAY_PTR(temp);
+					delete [] temp;
 					len = 0;
 				}
 			}
@@ -713,7 +409,7 @@ VOID CPropertyPageShell::SetAssociation(BOOL bAssociate, LPCTSTR lpExtension)
 					{
 						oldTypeKey = temp;
 					}
-					DELETE_ARRAY_PTR(temp);
+					delete [] temp;
 					len = 0;
 				}
 			}
@@ -789,7 +485,7 @@ VOID CPropertyPageShell::SetAssociation(BOOL bAssociate, LPCTSTR lpExtension)
 					{
 						oldTypeKey = temp;
 					}
-					DELETE_ARRAY_PTR(temp);
+					delete [] temp;
 					len = 0;
 				}
 			}
@@ -806,7 +502,7 @@ VOID CPropertyPageShell::SetAssociation(BOOL bAssociate, LPCTSTR lpExtension)
 						reg.SetValue(temp);
 						reg.DeleteValue(backupValue);
 					}
-					DELETE_ARRAY_PTR(temp);
+					delete [] temp;
 					len = 0;
 				}
 			}
@@ -1206,6 +902,7 @@ LRESULT CPropertyPageAbout::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARA
 	// ハイパーリンク
 	{
 		hyperLink.SubclassWindow(GetDlgItem(IDC_ABOUT_URL));
+		hyperLink.SetHyperLinkExtendedStyle(HLINK_UNDERLINEHOVER, HLINK_UNDERLINEHOVER);
 	}
 
 	return TRUE;

@@ -86,26 +86,4 @@ private:
 	VOID Remove();
 };
 
-/////////////////////////////////////////////////////////////////////////////
-// CTransFolderDialog - used for browsing for a folder
-class CTransFolderDialog : public CFolderDialogImpl<CTransFolderDialog>
-{
-public:
-	CTransFolderDialog(HWND hWndParent = NULL, LPCTSTR lpstrTitle = NULL, UINT uFlags = BIF_RETURNONLYFSDIRS, BOOL bTrans = FALSE, INT iTransValue = TRANS_VALUE_MAX)
-		: CFolderDialogImpl<CTransFolderDialog>(hWndParent, lpstrTitle, uFlags)
-	{
-		trans = bTrans;
-		transValue = iTransValue;
-	}
-
-	void OnInitialized();
-	void OnSelChanged(LPITEMIDLIST /*pItemIDList*/);
-
-	VOID SetTransparent();
-
-private:
-	BOOL trans;
-	INT transValue;
-};
-
 #endif // __COMBOFOLDER_H__
